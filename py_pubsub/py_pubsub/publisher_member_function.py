@@ -16,23 +16,25 @@ import rclpy
 from rclpy.node import Node
 
 from std_msgs.msg import ColorRGBA
+from nao_command_msgs.msg import ChestLed
 
 class MinimalPublisher(Node):
 
     def __init__(self):
         super().__init__('minimal_publisher')
-        self.publisher_ = self.create_publisher(ColorRGBA, 'effectors/chest_led', 10)
+        self.publisher_ = self.create_publisher(ChestLed, 'effectors/chest_led', 10)
         timer_period = 0.5  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0
 
     def timer_callback(self):
-        color = ColorRGBA() 
-        color.r = 1.0
-        color.g = 0.0
-        color.b = 0.0
-        self.publisher_.publish(color)
-        self.get_logger().info("Publishing: " + str(color.r) + ' ' + str(color.g) + ' ' + str(color.b))
+        chestled_color = ChestLed()
+        chestled_color.color.r = 1.0
+        chestled_color.color.g = 0.0
+        chestled_color.color.b = 0.0
+        print(chestled_color, chestled_color.color)
+        self.publisher_.publish(chestled_color)
+        #self.get_logger().info("Publishing: " + str(color.r) + ' ' + str(color.g) + ' ' + str(color.b))
 
 
 def main(args=None):
