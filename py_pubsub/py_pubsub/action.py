@@ -13,41 +13,50 @@
 # limitations under the License.
 
 import rclpy
+from rclpy.logging import LoggingSeverity
 from rclpy.node import Node
+import time
 
 from std_msgs.msg import String
 from nao_sensor_msgs.msg import Touch
+from std_msgs.msg import ColorRGBA
+from nao_command_msgs.msg import ChestLed
 
-class MinimalSubscriber(Node):
 
+
+
+class MyNode(Node):
     def __init__(self):
-        super().__init__('minimal_subscriber')
+        super().__init__('my_node')
+        self.count = 0
         self.subscription = self.create_subscription(
             Touch,
             'sensors/touch',
             self.listener_callback,
             10)
-        self.subscription  # prevent unused variable warning
+        self.publisher = self.create_publisher(ChestLed, 'effectors/chest_led', 10)
 
     def listener_callback(self, msg):
-        print(msg)
-        #if msg.head_front or msg.head_middle or msg.head_rear:
-        #self.get_logger().info("I heard: " + str(msg.head_front) + " " + str(msg.head_middle) + " " + str(msg.head_rear))
+        if msg.head_middle:
+            chestled_color = ChestLed()
+            chestled_color.color.r = 1.0 if self.count % 3 == 0 else 0.0
+            chestled_color.color.g = 1.0 if self.count % 3 == 1 else 0.0
+            chestled_color.color.b = 1.0 if self.count % 3 == 2 else 0.0
+            self.publisher.publish(chestled_color)
+            time.sleep(0.3)
+            self.count += 1
+
 
 
 def main(args=None):
     rclpy.init(args=args)
-
-    minimal_subscriber = MinimalSubscriber()
-
-    rclpy.spin(minimal_subscriber)
-
-    # Destroy the node explicitly
-    # (optional - otherwise it will be done automatically
-    # when the garbage collector destroys the node object)
-    minimal_subscriber.destroy_node()
+    node = MyNode()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    node.destroy_node()
     rclpy.shutdown()
-
 
 if __name__ == '__main__':
     main()
