@@ -22,7 +22,8 @@ setup(
         'console_scripts': [
              'talker = py_pubsub.publisher_member_function:main',
              'listener = py_pubsub.subscriber_member_function:main',
-             'action = py_pubsub.action:main'
+             'action = py_pubsub.action:main',
+             'stiffness_to_zero = py_pubsub.stiffness_to_zero:main'
         ],
     },
 )
